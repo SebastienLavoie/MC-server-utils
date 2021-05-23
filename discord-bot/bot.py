@@ -40,13 +40,15 @@ async def on_message(message):
                             players[patt.group(1)] = True
                         else:
                             players[patt.group(1)] = False
-                if len(players) == 2:
+                if len(players) == 3:
                     break
         return players
 
     if message.channel.name == "server-evenements":
         if message.content.lower() == "hello":
             await message.channel.send("Hello World!")
+        elif message.conten.lower() == "!help":
+            await message.channel.send("Available commands: !ip, !online")
         elif message.content.lower() == "!ip":
             ip = run("dig +short myip.opendns.com @resolver1.opendns.com", shell=True, stdout=PIPE, universal_newlines=True)
             await message.channel.send(ip.stdout)
