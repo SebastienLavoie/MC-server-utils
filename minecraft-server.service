@@ -1,0 +1,15 @@
+[Unit]
+Description=Minecraft Server running in tmux session
+After=network.target network-online.target
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+User=slavoie
+ExecStart=/home/slavoie/minecraft/dev/start_server_session.sh
+ExecStop=/home/slavoie/minecraft/dev/kill_server_session.sh
+Restart=on-failure
+RestartSec=60
+
+[Install]                                                                                                                                                                                                                                 
+WantedBy=multi-user.target
