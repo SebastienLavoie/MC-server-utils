@@ -4,6 +4,7 @@ import discord
 
 import logging
 import re
+from sys import stdout
 from configparser import ConfigParser
 from pathlib import Path
 from subprocess import run, PIPE
@@ -12,6 +13,7 @@ num_players = 3
 response_channel = "server-evenements"
 
 log = logging.getLogger(__file__)
+log.addHandler(logging.StreamHandler(stdout))
 log.setLevel(logging.DEBUG)
 
 config = ConfigParser()
