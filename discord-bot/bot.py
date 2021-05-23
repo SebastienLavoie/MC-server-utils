@@ -33,7 +33,7 @@ async def on_message(message):
         players = dict()
         with open(server_log, "r") as fp:
             for line in reversed(fp.readlines()):
-                patt = re.match(r"\[.*] \[Server thread/INFO] \[minecraft/DedicatedServer]: (.*) (.*) the game", line)
+                patt = re.match(r"^.*: (.*) (.*) the game", line)
                 if patt is not None:
                     if patt.group(1) not in players:
                         if patt.group(2) == "joined":
