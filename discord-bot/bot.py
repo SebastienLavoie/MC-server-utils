@@ -61,6 +61,7 @@ async def on_message(message):
                 for player, online in players.items():
                     if online is True:
                         msg += f"{player}\n"
+                msg = "No one online" if len(msg) == 0 else msg
                 await message.channel.send(msg)
 
 client.run(token)
