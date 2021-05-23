@@ -57,7 +57,7 @@ async def on_message(message):
         log.debug(f"Received {message.content} from {message.author}")
         if message.content.lower() == "hello":
             send_message(message, "Hello World!")
-        elif message.conten.lower() == "!help":
+        elif message.content.lower() == "!help":
             send_message(message, "Available commands: !ip, !online")
         elif message.content.lower() == "!ip":
             ip = run("dig +short myip.opendns.com @resolver1.opendns.com", shell=True, stdout=PIPE, universal_newlines=True)
