@@ -1,0 +1,13 @@
+[Unit]
+Description=Discord bot for getting information on the minecraft server
+After=network.target network-online.target
+
+[Service]
+Type=simple
+User=slavoie
+ExecStart=/home/slavoie/Envs/discord-bot/bin/python3 /home/slavoie/minecraft/MC-server-utils/discord-bot/bot.py
+Restart=on-failure
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
