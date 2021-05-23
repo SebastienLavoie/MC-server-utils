@@ -12,8 +12,15 @@ from subprocess import run, PIPE
 num_players = 3
 response_channel = "server-evenements"
 
-log = logging.getLogger(__file__)
-log.addHandler(logging.StreamHandler(stdout))
+file_name = Path(__file__).stem
+log = logging.getLogger(file_name)
+
+handler = logging.StreamHandler(stdout)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+handler.setFormatter(formatter)
+
+log.addHandler(handler)
 log.setLevel(logging.DEBUG)
 
 config = ConfigParser()
@@ -57,7 +64,7 @@ async def on_message(message):
             msg = "Hello World!"
             log.info(f"Sending: {msg}")
             await message.channel.send(msg)
-        elif message.conten.lower() == "!help":
+        elif message.content.lower() == "!help":
             msg = "Available commands: !ip, !online"
             log.info(f"Sending: {msg}")
             await message.channel.send(msg)
