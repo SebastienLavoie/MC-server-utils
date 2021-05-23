@@ -29,7 +29,7 @@ async def on_ready():
         if guild.name == "MC Server":
             break
 
-    print(f"{client.user} has connected to guild {guild.name} with id {guild.id}")
+    log.info(f"{client.user} has connected to guild {guild.name} with id {guild.id}")
 
 
 @client.event
@@ -49,29 +49,34 @@ async def on_message(message):
                     break
         return players
 
-    def send_message(message_obj, message):
-        log.info(f"Sending {message}")
-        await message_obj.channel.send(message)
-
     if message.channel.name == response_channel:
         log.debug(f"Received {message.content} from {message.author}")
         if message.content.lower() == "hello":
-            send_message(message, "Hello World!")
-        elif message.content.lower() == "!help":
-            send_message(message, "Available commands: !ip, !online")
+            msg = "Hello World!"
+            log.info(f"Sending: {msg}")
+            await message.channel.send(msg)
+        elif message.conten.lower() == "!help":
+            msg = "Available commands: !ip, !online"
+            log.info(f"Sending: {msg}")
+            await message.channel.send(msg)
         elif message.content.lower() == "!ip":
             ip = run("dig +short myip.opendns.com @resolver1.opendns.com", shell=True, stdout=PIPE, universal_newlines=True)
-            send_message(message, ip.stdout)
+            msg = ip.stdout
+            log.info(f"Sending: {msg}")
+            await message.channel.send(msg)
         elif message.content.lower() == "!online":
             players = online()
             if len(players) == 0:
-                send_message(message, "No one online")
+                msg = "No one online"
+                log.info(f"Sending: {msg}")
+                await message.channel.send(msg)
             else:
-                msg = str()
+                msg = ""
                 for player, online in players.items():
                     if online is True:
                         msg += f"{player}\n"
                 msg = "No one online" if len(msg) == 0 else msg
-                send_message(message, msg)
+                log.info(f"Sending: {msg}")
+                await message.channel.send(msg)
 
 client.run(token)
