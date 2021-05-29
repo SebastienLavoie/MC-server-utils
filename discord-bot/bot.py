@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
-import discord
-from discord.ext import tasks, commands
-
 import logging
 import re
-from typing import Dict
-from sys import stdout
 from configparser import ConfigParser
+from argparse import ArgumentParser
 from pathlib import Path
 from subprocess import run, PIPE
+from sys import stdout
+from typing import Dict
+
+import discord
+from discord.ext import tasks
 
 num_players = 3
 response_channel = "server-evenements"
@@ -108,12 +109,13 @@ class MCServerClient(discord.Client):
         else:
             for player, online in players_online.items():
                 if player.lower() in members_dict.keys():
+                    log.debug(members_dict[player.lower()].roles)
                     if online_role not in members_dict[player.lower()].roles and online is True:
                         log.info(f"Adding role {online_role.name} to {player}")
-                        await members_dict[player.lower()].add_roles(online_role)
+                        await members_dict[player.lower()].add_roles(online_role, atomic=True)
                     elif online_role in members_dict[player.lower()].roles and online is False:
                         log.info(f"Removing role {online_role.name} from {player}")
-                        await members_dict[player.lower()].remove_roles(online_role)
+                        await members_dict[player.lower()].remove_roles(online_role, atomic=True)
 
     async def on_ready(self):
         for guild in self.guilds:
@@ -160,5 +162,10 @@ class MCServerClient(discord.Client):
                     await message.channel.send(msg)
 
 
+argparser = ArgumentParser()
+argparser.add_argument("--log-level", type=str, default="DEBUG")
+args = argparser.parse_args()
+
+log.setLevel(args.log_level)
 client = MCServerClient(member_cache_flags=member_cache, intents=intents)
 client.run(token)
