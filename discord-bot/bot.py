@@ -32,6 +32,7 @@ config.read(Path.home().joinpath(".config", "discord", "mcserverbot.conf"))
 
 token = config['default']["token"]
 online_role_id = config["default"]["online_role_id"]
+guild_id = config["default"]["guild_id"]
 server_log = Path.home().joinpath("minecraft", "create-mod", "server.log")
 
 # Intents
@@ -103,7 +104,7 @@ class MCServerClient(discord.Client):
 
     async def on_ready(self):
         for guild in self.guilds:
-            if guild.name == "MC Server":
+            if guild.id == guild_id:
                 break
 
         self.mc_guild = guild
