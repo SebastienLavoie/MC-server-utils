@@ -32,12 +32,12 @@ config = ConfigParser()
 config.read(Path.home().joinpath(".config", "discord", "mcserverbot.conf"))
 
 token = config['default']["token"]
-online_role_id = config["default"]["online_role_id"]
+online_role_id = int(config["default"]["online_role_id"])
 guild_id = config["default"]["guild_id"]
 server_log = Path.home().joinpath("minecraft", "create-mod", "server.log")
 
 # Intents
-intents = discord.Intents(messages=True, members=True, presences=True)
+intents = discord.Intents(messages=True, members=True, presences=True, guilds=True)
 
 # Member cache
 member_cache = discord.MemberCacheFlags.none()
@@ -108,7 +108,7 @@ class MCServerClient(discord.Client):
         else:
             for player, online in players_online.items():
                 if player.lower() in members_dict.keys():
-                    if online is True:
+                    if online_role not in members_dict[player.lower()].roles and online is True:
                         log.info(f"Adding role {online_role.name} to {player}")
                         await members_dict[player.lower()].add_roles(online_role)
                     elif online_role in members_dict[player.lower()].roles and online is False:
