@@ -87,7 +87,12 @@ class MCServerClient(discord.Client):
     def get_members_dict(self) -> Dict[str, discord.Member]:
         members = self.members
         log.debug(members)
-        return {m.nick.lower(): m for m in members if m.id != self.user.id}
+        member_dict = dict()
+        for member in members:
+            if member.id != self.user.id:
+                name = member.nick if member.nick is not None else member.name
+                member_dict[name] = member
+        return member_dict
 
     @tasks.loop(minutes=1.0)
     async def update_player_status(self):
