@@ -51,7 +51,6 @@ class MCServerClient(discord.Client):
         super().__init__(*args, **kwargs)
         self.mc_guild = None  # To be populated later on
         self.members = None
-        self.roles = None
 
     @staticmethod
     def online() -> Dict[str, bool]:
@@ -80,8 +79,8 @@ class MCServerClient(discord.Client):
     def get_online_role(self) -> discord.Role:
         return self.mc_guild.get_role(online_role_id)
 
-    def get_members_dict(self) -> Dict[str, discord.Member]:
-        members = self.members
+    async def get_members_dict(self) -> Dict[str, discord.Member]:
+        members = await self.mc_guild.fetch_members().flatten()
         log.debug(members)
         member_dict = dict()
         for member in members:
@@ -94,7 +93,7 @@ class MCServerClient(discord.Client):
     async def update_player_status(self):
         players_online = self.online()
         log.debug(players_online)
-        members_dict = self.get_members_dict()
+        members_dict = await self.get_members_dict()
         log.debug(members_dict)
         online_role = self.get_online_role()
         log.debug(f"Starting update_player_status task")
@@ -119,8 +118,6 @@ class MCServerClient(discord.Client):
 
         self.mc_guild = guild
         log.info(f"{self.user} has connected to guild {guild.name} with id {guild.id}")
-        self.members = await self.mc_guild.fetch_members().flatten()
-        self.roles = await self.mc_guild.fetch_roles()
         self.update_player_status.start()
 
     async def on_message(self, message):
