@@ -41,6 +41,7 @@ intents = discord.Intents(messages=True, members=True)
 class MCServerClient(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.mc_guild = None  # To be populated later on
 
     @staticmethod
     def online() -> Dict[str, bool]:
@@ -64,7 +65,7 @@ class MCServerClient(discord.Client):
                    universal_newlines=True).stdout
 
     def get_roles(self):
-        return self.guilds[0].roles
+        return self.mc_guild.roles
 
     def get_online_role(self) -> discord.Role:
         roles = self.get_roles()
@@ -75,7 +76,8 @@ class MCServerClient(discord.Client):
         raise discord.ClientException("Could not find online role in guild!")
 
     def get_members_dict(self) -> Dict[str, discord.Member]:
-        members = self.guilds[0].members
+        members = self.mc_guild.members
+        log.debug(members)
         return {m.nick.lower(): m for m in members}
 
     @tasks.loop(minutes=1.0)
@@ -104,6 +106,7 @@ class MCServerClient(discord.Client):
             if guild.name == "MC Server":
                 break
 
+        self.mc_guild = guild
         log.info(f"{self.user} has connected to guild {guild.name} with id {guild.id}")
         self.update_player_status.start()
 
