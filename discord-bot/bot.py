@@ -138,4 +138,6 @@ class MCServerClient(discord.Client):
                     log.info(f"Sending: {msg}")
                     await message.channel.send(msg)
 
+
+client = MCServerClient()
 client.run(token)
