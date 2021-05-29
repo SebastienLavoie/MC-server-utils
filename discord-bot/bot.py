@@ -41,6 +41,7 @@ intents = discord.Intents(messages=True, members=True)
 class MCServerClient(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.update_player_status.start()
 
     @staticmethod
     def online() -> Dict[str, bool]:
