@@ -83,7 +83,7 @@ class MCServerClient(discord.Client):
         raise discord.ClientException("Could not find online role in guild!")
 
     def get_members_dict(self) -> Dict[str, discord.Member]:
-        members = self.mc_guild.members
+        members = await self.mc_guild.fetch_members().flatten()
         log.debug(members)
         return {m.nick.lower(): m for m in members if m.id != self.user.id}
 
@@ -115,7 +115,6 @@ class MCServerClient(discord.Client):
 
         self.mc_guild = guild
         log.info(f"{self.user} has connected to guild {guild.name} with id {guild.id}")
-        self.mc_guild.members = await self.mc_guild.fetch_members().flatten()
         self.update_player_status.start()
 
     async def on_message(self, message):
