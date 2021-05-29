@@ -2,8 +2,8 @@
 
 import logging
 import re
-from configparser import ConfigParser
 from argparse import ArgumentParser
+from configparser import ConfigParser
 from pathlib import Path
 from subprocess import run, PIPE
 from sys import stdout
@@ -28,6 +28,7 @@ log.addHandler(handler)
 log.setLevel(logging.DEBUG)
 
 log.info("Logging setup")
+
 # Config reading
 config = ConfigParser()
 config.read(Path.home().joinpath(".config", "discord", "mcserverbot.conf"))
@@ -125,24 +126,24 @@ class MCServerClient(discord.Client):
             return
 
         if message.channel.name == response_channel:
-            log.debug(f"Received {message.content} from {message.author}")
+            log.debug(f"Received: '{message.content}' from {message.author}")
             if message.content.lower() == "hello":
                 msg = "Hello World!"
-                log.info(f"Sending: {msg}")
+                log.info(f"Sending: '{msg}'")
                 await message.channel.send(msg)
             elif message.content.lower() == "!help":
                 msg = "Available commands: !ip, !online"
-                log.info(f"Sending: {msg}")
+                log.info(f"Sending: '{msg}'")
                 await message.channel.send(msg)
             elif message.content.lower() == "!ip":
                 msg = self.get_ip()
-                log.info(f"Sending: {msg}")
+                log.info(f"Sending: '{msg}'")
                 await message.channel.send(msg)
             elif message.content.lower() == "!online":
                 players = self.online()
                 if len(players) == 0:
                     msg = "No one online"
-                    log.info(f"Sending: {msg}")
+                    log.info(f"Sending: '{msg}'")
                     await message.channel.send(msg)
                 else:
                     msg = ""
@@ -150,7 +151,7 @@ class MCServerClient(discord.Client):
                         if online is True:
                             msg += f"{player}\n"
                     msg = "No one online" if len(msg) == 0 else msg
-                    log.info(f"Sending: {msg}")
+                    log.info(f"Sending: '{msg}'")
                     await message.channel.send(msg)
 
 
