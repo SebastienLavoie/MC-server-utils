@@ -78,13 +78,14 @@ class MCServerClient(discord.Client):
         members = self.guilds[0].members
         return {m.nick.lower(): m for m in members}
 
-    @tasks.loop(minutes=5.0)
+    @tasks.loop(minutes=1.0)
     async def update_player_status(self):
         players_online = self.online()
         log.debug(players_online)
         members_dict = self.get_members_dict()
         log.debug(members_dict)
         online_role = self.get_online_role()
+        log.debug(f"Starting update_player_status task")
 
         if len(players_online) == 0:
             return
