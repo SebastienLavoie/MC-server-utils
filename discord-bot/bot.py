@@ -51,7 +51,6 @@ class MCServerClient(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.mc_guild = None  # To be populated later on
-        self.members = None
 
     @staticmethod
     def online() -> Dict[str, bool]:
