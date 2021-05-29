@@ -79,7 +79,7 @@ class MCServerClient(discord.Client):
     def get_members_dict(self) -> Dict[str, discord.Member]:
         members = self.mc_guild.members
         log.debug(members)
-        return {m.nick.lower(): m for m in members}
+        return {m.nick.lower(): m for m in members if m.id != self.user.id}
 
     @tasks.loop(minutes=1.0)
     async def update_player_status(self):
