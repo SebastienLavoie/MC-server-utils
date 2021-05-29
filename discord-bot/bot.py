@@ -78,12 +78,7 @@ class MCServerClient(discord.Client):
         return self.mc_guild.roles
 
     def get_online_role(self) -> discord.Role:
-        roles = self.roles
-        for role in roles:
-            if role.id == online_role_id:
-                return role
-
-        raise discord.ClientException("Could not find online role in guild!")
+        return self.mc_guild.get_role(online_role_id)
 
     def get_members_dict(self) -> Dict[str, discord.Member]:
         members = self.members
