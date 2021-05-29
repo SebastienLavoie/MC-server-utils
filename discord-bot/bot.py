@@ -42,6 +42,7 @@ intents = discord.Intents(messages=True, members=True, presences=True)
 # Member cache
 member_cache = discord.MemberCacheFlags.none()
 member_cache.online = True
+member_cache.joined = True
 
 
 class MCServerClient(discord.Client):
@@ -114,7 +115,7 @@ class MCServerClient(discord.Client):
 
         self.mc_guild = guild
         log.info(f"{self.user} has connected to guild {guild.name} with id {guild.id}")
-        await self.mc_guild.fetch_members()
+        self.mc_guild.members = await self.mc_guild.fetch_members().flatten()
         self.update_player_status.start()
 
     async def on_message(self, message):
