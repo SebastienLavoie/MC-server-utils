@@ -41,7 +41,6 @@ intents = discord.Intents(messages=True, members=True)
 class MCServerClient(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.update_player_status.start()
 
     @staticmethod
     def online() -> Dict[str, bool]:
@@ -106,6 +105,7 @@ class MCServerClient(discord.Client):
                 break
 
         log.info(f"{self.user} has connected to guild {guild.name} with id {guild.id}")
+        self.update_player_status.start()
 
     async def on_message(self, message):
         if message.author.id == self.user.id:
