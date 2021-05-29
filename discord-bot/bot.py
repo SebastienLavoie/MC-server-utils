@@ -26,6 +26,7 @@ handler.setFormatter(formatter)
 log.addHandler(handler)
 log.setLevel(logging.DEBUG)
 
+log.info("Logging setup")
 # Config reading
 config = ConfigParser()
 config.read(Path.home().joinpath(".config", "discord", "mcserverbot.conf"))
@@ -36,7 +37,11 @@ guild_id = config["default"]["guild_id"]
 server_log = Path.home().joinpath("minecraft", "create-mod", "server.log")
 
 # Intents
-intents = discord.Intents(messages=True, members=True)
+intents = discord.Intents(messages=True, members=True, presences=True)
+
+# Member cache
+member_cache = discord.MemberCacheFlags.none()
+member_cache.online = True
 
 
 class MCServerClient(discord.Client):
@@ -109,6 +114,7 @@ class MCServerClient(discord.Client):
 
         self.mc_guild = guild
         log.info(f"{self.user} has connected to guild {guild.name} with id {guild.id}")
+        await self.mc_guild.fetch_members()
         self.update_player_status.start()
 
     async def on_message(self, message):
@@ -145,5 +151,5 @@ class MCServerClient(discord.Client):
                     await message.channel.send(msg)
 
 
-client = MCServerClient()
+client = MCServerClient(member_cache_flags=member_cache, intents=intents)
 client.run(token)
