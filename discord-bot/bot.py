@@ -85,7 +85,7 @@ class MCServerClient(discord.Client):
         member_dict = dict()
         for member in members:
             if member.id != self.user.id:
-                name = member.nick if member.nick is not None else member.name
+                name = member.nick.lower() if member.nick is not None else member.name.lower()
                 member_dict[name] = member
         return member_dict
 
