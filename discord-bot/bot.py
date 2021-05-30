@@ -81,7 +81,7 @@ class MCServerClient(discord.Client):
 
     async def get_members_dict(self) -> Dict[str, discord.Member]:
         members = await self.mc_guild.fetch_members().flatten()
-        log.debug(members)
+        # log.debug(members)
         member_dict = dict()
         for member in members:
             if member.id != self.user.id:
