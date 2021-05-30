@@ -21,7 +21,7 @@ log = logging.getLogger(file_name)
 
 handler = logging.StreamHandler(stdout)
 handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+formatter = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
 handler.setFormatter(formatter)
 
 log.addHandler(handler)
