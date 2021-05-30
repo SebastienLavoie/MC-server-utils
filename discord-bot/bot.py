@@ -103,7 +103,7 @@ class MCServerClient(discord.Client):
         else:
             for player, online in players_online.items():
                 if player.lower() in members_dict.keys():
-                    log.debug(members_dict[player.lower()].roles)
+                    # log.debug(members_dict[player.lower()].roles)
                     if online_role not in members_dict[player.lower()].roles and online is True:
                         log.info(f"Adding role {online_role.name} to {player}")
                         await members_dict[player.lower()].add_roles(online_role, atomic=True)
