@@ -1,6 +1,7 @@
 #!/bin/bash
 
-source /home/slavoie/minecraft/dev/server.conf
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+soure "$SCRIPT_DIR"/server.conf
 
 set -o errexit
 

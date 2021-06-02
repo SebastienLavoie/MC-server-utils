@@ -2,7 +2,8 @@
 
 set -o errexit
 
-source /home/slavoie/minecraft/dev/server.conf
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+soure "$SCRIPT_DIR"/server.conf
 
 echo "Killing server - giving 30s warning"
 server_say 'SHUTTING DOWN SERVER IN 30s'
