@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import logging
-import re
 from argparse import ArgumentParser
 from configparser import ConfigParser
 from pathlib import Path
@@ -13,7 +12,6 @@ from mcstatus import MinecraftServer
 import discord
 from discord.ext import tasks
 
-num_players = 3
 response_channel = "server-evenements"
 
 # Logging setup
