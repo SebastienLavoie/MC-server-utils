@@ -83,23 +83,18 @@ class MCServerClient(discord.Client):
     @tasks.loop(minutes=1.0)
     async def update_player_status(self):
         players_online = self.online()
-        log.debug(players_online)
+        log.debug(f"Players online: {players_online}")
         members_dict = await self.get_members_dict()
-        log.debug(members_dict)
         online_role = self.get_online_role()
         log.debug(f"Starting update_player_status task")
-
-        if len(players_online) == 0:
-            return
-        else:
-            for member in members_dict.keys():
-                if member in players_online and online_role not in members_dict[member].roles:
-                    # log.debug(members_dict[player.lower()].roles)
-                    log.info(f"Adding role {online_role.name} to {member}")
-                    await members_dict[member.lower()].add_roles(online_role, atomic=True)
-                elif online_role in members_dict[member.lower()].roles:
-                    log.info(f"Removing role {online_role.name} from {member}")
-                    await members_dict[member.lower()].remove_roles(online_role, atomic=True)
+        for member in members_dict.keys():
+            if member in players_online and online_role not in members_dict[member].roles:
+                # log.debug(members_dict[player.lower()].roles)
+                log.info(f"Adding role {online_role.name} to {member}")
+                await members_dict[member].add_roles(online_role, atomic=True)
+            elif online_role in members_dict[member].roles:
+                log.info(f"Removing role {online_role.name} from {member}")
+                await members_dict[member].remove_roles(online_role, atomic=True)
 
     async def on_ready(self):
         for guild in self.guilds:
