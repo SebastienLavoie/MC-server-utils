@@ -3,7 +3,7 @@
 set -o errexit
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-soure "$SCRIPT_DIR"/server.conf
+source "$SCRIPT_DIR"/server.conf
 
 echo "Killing server - giving 30s warning"
 server_say 'SHUTTING DOWN SERVER IN 30s'

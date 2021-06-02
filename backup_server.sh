@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-soure "$SCRIPT_DIR"/server.conf
+source "$SCRIPT_DIR"/server.conf
 
 set -o errexit
 
