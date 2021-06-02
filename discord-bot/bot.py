@@ -7,7 +7,8 @@ from configparser import ConfigParser
 from pathlib import Path
 from subprocess import run, PIPE
 from sys import stdout
-from typing import Dict
+from typing import Dict, List
+from mcstatus import MinecraftServer
 
 import discord
 from discord.ext import tasks
@@ -46,6 +47,9 @@ member_cache = discord.MemberCacheFlags.none()
 member_cache.online = True
 member_cache.joined = True
 
+# Minecraft server
+server = MinecraftServer.lookup("localhost:25565")
+
 
 class MCServerClient(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -53,20 +57,9 @@ class MCServerClient(discord.Client):
         self.mc_guild = None  # To be populated later on
 
     @staticmethod
-    def online() -> Dict[str, bool]:
-        players = dict()
-        with open(server_log, "r") as fp:
-            for line in reversed(fp.readlines()):
-                patt = re.match(r"^.*: (.*) (.*) the game", line)
-                if patt is not None:
-                    if patt.group(1) not in players:
-                        if patt.group(2) == "joined":
-                            players[patt.group(1)] = True
-                        else:
-                            players[patt.group(1)] = False
-                if len(players) == num_players:
-                    break
-        return players
+    def online() -> List[str]:
+        query = server.query()
+        return [p.lower() for p in query.players.names]
 
     @staticmethod
     def get_ip() -> str:
@@ -101,15 +94,14 @@ class MCServerClient(discord.Client):
         if len(players_online) == 0:
             return
         else:
-            for player, online in players_online.items():
-                if player.lower() in members_dict.keys():
+            for member in members_dict.keys():
+                if member in players_online and online_role not in members_dict[member].roles:
                     # log.debug(members_dict[player.lower()].roles)
-                    if online_role not in members_dict[player.lower()].roles and online is True:
-                        log.info(f"Adding role {online_role.name} to {player}")
-                        await members_dict[player.lower()].add_roles(online_role, atomic=True)
-                    elif online_role in members_dict[player.lower()].roles and online is False:
-                        log.info(f"Removing role {online_role.name} from {player}")
-                        await members_dict[player.lower()].remove_roles(online_role, atomic=True)
+                    log.info(f"Adding role {online_role.name} to {member}")
+                    await members_dict[member.lower()].add_roles(online_role, atomic=True)
+                elif online_role in members_dict[member.lower()].roles:
+                    log.info(f"Removing role {online_role.name} from {member}")
+                    await members_dict[member.lower()].remove_roles(online_role, atomic=True)
 
     async def on_ready(self):
         for guild in self.guilds:
@@ -139,17 +131,15 @@ class MCServerClient(discord.Client):
                 log.info(f"Sending: '{msg}'")
                 await message.channel.send(msg)
             elif message.content.lower() == "!online":
-                players = self.online()
-                if len(players) == 0:
+                players_online = self.online()
+                if len(players_online) == 0:
                     msg = "No one online"
                     log.info(f"Sending: '{msg}'")
                     await message.channel.send(msg)
                 else:
-                    msg = ""
-                    for player, online in players.items():
-                        if online is True:
-                            msg += f"{player}\n"
-                    msg = "No one online" if len(msg) == 0 else msg
+                    msg = "Players Online:\n"
+                    for player in players_online:
+                        msg += f"  - {player}\n"
                     log.info(f"Sending: '{msg}'")
                     await message.channel.send(msg)
 
