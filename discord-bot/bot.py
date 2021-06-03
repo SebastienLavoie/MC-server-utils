@@ -92,7 +92,7 @@ class MCServerClient(discord.Client):
                 # log.debug(members_dict[player.lower()].roles)
                 log.info(f"Adding role {online_role.name} to {member}")
                 await members_dict[member].add_roles(online_role, atomic=True)
-            elif online_role in members_dict[member].roles:
+            elif member not in players_online and online_role in members_dict[member].roles:
                 log.info(f"Removing role {online_role.name} from {member}")
                 await members_dict[member].remove_roles(online_role, atomic=True)
 
