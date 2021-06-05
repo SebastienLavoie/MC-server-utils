@@ -13,11 +13,11 @@ function delete_files_older_than () {
     expiry=$1
     dir=$2
     echo "Deleting backups older than $expiry days in $dir"
-    NUM_DELETIONS=$(find "$dir" -atime +$LOCAL_EXPIRY_DAYS -type f -name "$SERVER_NAME"-'*.tar.gz' | wc -l) 
+    NUM_DELETIONS=$(find "$dir" -atime +"$expiry" -type f -name "$SERVER_NAME"-'*.tar.gz' | wc -l)
     if [ "$NUM_DELETIONS" != 0 ]
     then
         echo "Following files have been deleted:"
-        find "$dir" -atime +$LOCAL_EXPIRY_DAYS -type f -name "$SERVER_NAME"-'*.tar.gz' -delete -print
+        find "$dir" -atime +"$expiry" -type f -name "$SERVER_NAME"-'*.tar.gz' -delete -print
     else
         echo "No files to delete"
     fi 
