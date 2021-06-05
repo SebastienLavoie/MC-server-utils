@@ -72,7 +72,6 @@ class MCServerClient(discord.Client):
 
     async def get_members_dict(self) -> Dict[str, discord.Member]:
         members = await self.mc_guild.fetch_members().flatten()
-        # log.debug(members)
         member_dict = dict()
         for member in members:
             if member.id != self.user.id:
@@ -106,35 +105,45 @@ class MCServerClient(discord.Client):
         self.update_player_status.start()
 
     async def on_message(self, message):
+        async def send_msg(m: str):
+            log.info(f"Sending: '{m}'")
+            await message.channel.send(m)
+
+        def get_response(rcv_msg: str):
+            def get_players_online_msg():
+                players_online = self.online()
+                if len(players_online) == 0:
+                    return "No one online"
+                else:
+                    msg = "Players Online:\n"
+                    for player in players_online:
+                        msg += f"\t- {player}\n"
+                    return msg
+
+            response_dict = {
+                "hello": "Hello World!",
+                "!ip": self.get_ip(),
+                "!online": get_players_online_msg()
+            }
+            if rcv_msg == "!help":
+                resp = "Available Commands Are:\n"
+                for key in response_dict.keys():
+                    if key.startswith("!"):
+                        resp += f"**{key}**\n"
+            elif rcv_msg in response_dict.keys():
+                resp = response_dict[rcv_msg]
+            else:
+                resp = None
+            return resp
+
         if message.author.id == self.user.id:
             return
 
         if message.channel.name == response_channel:
             log.debug(f"Received: '{message.content}' from {message.author}")
-            if message.content.lower() == "hello":
-                msg = "Hello World!"
-                log.info(f"Sending: '{msg}'")
-                await message.channel.send(msg)
-            elif message.content.lower() == "!help":
-                msg = "Available commands: !ip, !online"
-                log.info(f"Sending: '{msg}'")
-                await message.channel.send(msg)
-            elif message.content.lower() == "!ip":
-                msg = self.get_ip()
-                log.info(f"Sending: '{msg}'")
-                await message.channel.send(msg)
-            elif message.content.lower() == "!online":
-                players_online = self.online()
-                if len(players_online) == 0:
-                    msg = "No one online"
-                    log.info(f"Sending: '{msg}'")
-                    await message.channel.send(msg)
-                else:
-                    msg = "Players Online:\n"
-                    for player in players_online:
-                        msg += f"  - {player}\n"
-                    log.info(f"Sending: '{msg}'")
-                    await message.channel.send(msg)
+            response = get_response(message.content.lower())
+            if response is not None:
+                await send_msg(response)
 
 
 argparser = ArgumentParser()
@@ -142,5 +151,6 @@ argparser.add_argument("--log-level", type=str, default="DEBUG")
 args = argparser.parse_args()
 
 log.setLevel(args.log_level)
-client = MCServerClient(member_cache_flags=member_cache, intents=intents)
+client = MCServerClient(member_cache_flags=member_cache, intents=intents,
+                        activity=discord.Activity(type=discord.ActivityType.listening, name="!help"))
 client.run(token)
