@@ -79,7 +79,7 @@ class MCServerClient(discord.Client):
                 member_dict[name] = member
         return member_dict
 
-    @tasks.loop(minutes=1.0)
+    @tasks.loop(seconds=10.0)
     async def update_player_status(self):
         players_online = self.online()
         log.debug(f"Players online: {players_online}")
