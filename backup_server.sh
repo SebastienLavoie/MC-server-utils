@@ -44,8 +44,8 @@ rclone copy -P "$BACKUP_DIR"/"$SERVER_NAME"-"$DATE_STR".tar.gz "$REMOTE_BACKUP_D
 stop_time=$(date +%s)
 exec_time=$(("$stop_time" - "$start_time"))
 file_size=$(du -h "$BACKUP_DIR"/"$SERVER_NAME"-"$DATE_STR".tar.gz | cut -f1)
-server_say "Upload Complete In {$exec_time}s. File size {$file_size}"
-echo "Upload Complete In {$exec_time}s. File size ${file_size}"
+server_say "Upload Complete In ${exec_time}s. File size ${file_size}"
+echo "Upload Complete In ${exec_time}s. File size ${file_size}"
 delete_files_older_than "$LOCAL_EXPIRY_DAYS" "$BACKUP_DIR"
-delete_files_older_than "$CLOUD_EXPIRY_DAYS" "$CLOUD_BACKUP_DIR"
+# delete_files_older_than "$CLOUD_EXPIRY_DAYS" "$CLOUD_BACKUP_DIR"
 echo "---------------------------------------------------------------------"
