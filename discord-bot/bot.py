@@ -12,7 +12,7 @@ from mcstatus import MinecraftServer
 import discord
 from discord.ext import tasks
 
-response_channel = "server-evenements"
+response_channel_id = 846077490333614091
 
 # Logging setup
 file_name = Path(__file__).stem
@@ -53,6 +53,7 @@ class MCServerClient(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.mc_guild = None  # To be populated later on
+        self.response_channel = None
 
     @staticmethod
     def online() -> List[str]:
@@ -91,9 +92,11 @@ class MCServerClient(discord.Client):
                 # log.debug(members_dict[player.lower()].roles)
                 log.info(f"Adding role {online_role.name} to {member}")
                 await members_dict[member].add_roles(online_role, atomic=True)
+                await self.send_msg(f"{member} joined the game")
             elif member not in players_online and online_role in members_dict[member].roles:
                 log.info(f"Removing role {online_role.name} from {member}")
                 await members_dict[member].remove_roles(online_role, atomic=True)
+                await self.send_msg(f"{member} left the game")
 
     async def on_ready(self):
         for guild in self.guilds:
@@ -101,14 +104,15 @@ class MCServerClient(discord.Client):
                 break
 
         self.mc_guild = guild
+        self.response_channel = self.get_channel(response_channel_id)
         log.info(f"{self.user} has connected to guild {guild.name} with id {guild.id}")
         self.update_player_status.start()
 
-    async def on_message(self, message):
-        async def send_msg(m: str):
-            log.info(f"Sending: '{m}'")
-            await message.channel.send(m)
+    async def send_msg(self, msg: str):
+        log.info(f"Sending: '{msg}'")
+        await self.response_channel.send(msg)
 
+    async def on_message(self, message):
         def get_response(rcv_msg: str):
             def get_players_online_msg():
                 players_online = self.online()
@@ -139,11 +143,11 @@ class MCServerClient(discord.Client):
         if message.author.id == self.user.id:
             return
 
-        if message.channel.name == response_channel:
+        if message.channel.id == response_channel_id:
             log.debug(f"Received: '{message.content}' from {message.author}")
             response = get_response(message.content.lower())
             if response is not None:
-                await send_msg(response)
+                await self.send_msg(response)
 
 
 argparser = ArgumentParser()
