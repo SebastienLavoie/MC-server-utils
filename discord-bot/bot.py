@@ -71,8 +71,11 @@ class MCServerClient(discord.Client):
     def get_online_role(self) -> discord.Role:
         return self.mc_guild.get_role(online_role_id)
 
+    async def get_members(self):
+        return await self.mc_guild.fetch_members().flatten()
+
     async def get_members_dict(self) -> Dict[str, discord.Member]:
-        members = await self.mc_guild.fetch_members().flatten()
+        members = await self.get_members()
         member_dict = dict()
         for member in members:
             if member.id != self.user.id:
@@ -88,7 +91,9 @@ class MCServerClient(discord.Client):
         online_role = self.get_online_role()
         log.debug(f"Starting update_player_status task")
         for member in members_dict.keys():
-            if member in players_online and online_role not in members_dict[member].roles:
+            if (member in players_online) and (
+                    online_role not in members_dict[member].roles) and (
+                    members_dict[member].status == discord.Status.online):
                 # log.debug(members_dict[player.lower()].roles)
                 log.info(f"Adding role {online_role.name} to {member}")
                 await members_dict[member].add_roles(online_role, atomic=True)
