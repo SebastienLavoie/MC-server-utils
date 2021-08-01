@@ -86,15 +86,13 @@ class MCServerClient(discord.Client):
     @tasks.loop(seconds=10.0)
     async def update_player_status(self):
         players_online = self.online()
+        members_dict = await self.get_members_dict()
         if len(players_online) > 0:
             log.debug(f"Players online: {players_online}")
-        members_dict = await self.get_members_dict()
         online_role = self.get_online_role()
         for member in members_dict.keys():
             if (member in players_online) and (
-                    online_role not in members_dict[member].roles) and (
-                    members_dict[member].status == discord.Status.online):
-                # log.debug(members_dict[player.lower()].roles)
+                    online_role not in members_dict[member].roles):
                 log.info(f"Adding role {online_role.name} to {member}")
                 await members_dict[member].add_roles(online_role, atomic=True)
                 await self.send_msg(f"{member} joined the game")
