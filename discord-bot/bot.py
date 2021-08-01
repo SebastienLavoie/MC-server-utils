@@ -35,7 +35,6 @@ config.read(Path.home().joinpath(".config", "discord", "mcserverbot.conf"))
 token = config['default']["token"]
 online_role_id = int(config["default"]["online_role_id"])
 guild_id = config["default"]["guild_id"]
-server_log = Path.home().joinpath("minecraft", "create-mod", "server.log")
 
 # Intents
 intents = discord.Intents(messages=True, members=True, presences=True, guilds=True)
