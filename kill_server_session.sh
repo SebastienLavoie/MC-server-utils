@@ -19,4 +19,3 @@ sleep 30
 
 tmux kill-session -t "$SERVER_TMUX"
 echo "Session killed"
-docker kill mc-frontail
