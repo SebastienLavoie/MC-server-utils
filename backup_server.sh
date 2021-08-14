@@ -3,7 +3,7 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 source "$SCRIPT_DIR"/server.conf
 
-set -o errexit
+set -eo errexit pipefail
 
 DATE_STR=$(date +%Y%m%dT%H%M%S)
 LOCAL_EXPIRY_DAYS=4
@@ -30,6 +30,9 @@ send_server_cmd '/save-all'
 sleep 5
 
 start_time=$(date +%s)
+if [ -e /tmp/mc-backup ]; then
+    rm -rf /tmp/mc-backup
+fi
 mkdir /tmp/mc-backup
 cp -a "$SERVER_DIR" /tmp/mc-backup/
 tar cf "$BACKUP_DIR"/"$SERVER_NAME"-"$DATE_STR".tar.gz /tmp/mc-backup/"$(basename "$SERVER_DIR")"
