@@ -34,8 +34,8 @@ if [ -e /tmp/mc-backup ]; then
     rm -rf /tmp/mc-backup
 fi
 mkdir /tmp/mc-backup
-cp -a "$SERVER_DIR" /tmp/mc-backup/
-tar cf "$BACKUP_DIR"/"$SERVER_NAME"-"$DATE_STR".tar.gz /tmp/mc-backup/"$(basename "$SERVER_DIR")"
+cp -a "$SERVER_DIR"/world /tmp/mc-backup/
+tar cf "$BACKUP_DIR"/"$SERVER_NAME"-"$DATE_STR".tar.gz /tmp/mc-backup/world
 rm -rf /tmp/mc-backup
 stop_time=$(date +%s)
 exec_time=$(("$stop_time" - "$start_time"))
