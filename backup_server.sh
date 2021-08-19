@@ -74,7 +74,7 @@ fi
 mkdir /tmp/mc-backup
 echo "Copying to /tmp ..."
 cp -a "$SERVER_DIR"/world /tmp/mc-backup/
-if [ ! "$dry_run" ]; then
+if [ "$dry_run" = "false" ]; then
   echo "Compressing..."
   tar cf "$BACKUP_DIR"/"$SERVER_NAME"-"$DATE_STR".tar.gz /tmp/mc-backup/world
 fi
@@ -85,7 +85,7 @@ server_say "Backup Done In ${exec_time}s. Uploading To Cloud..."
 echo "Backup Done In ${exec_time}s. Uploading To Cloud..."
 
 start_time=$(date +%s)
-if [ ! "$dry_run" ]; then
+if [ "$dry_run" = "false" ]; then
   rclone copy -P "$BACKUP_DIR"/"$SERVER_NAME"-"$DATE_STR".tar.gz "$REMOTE_BACKUP_DIR"
 fi
 stop_time=$(date +%s)
@@ -93,7 +93,7 @@ exec_time=$(("$stop_time" - "$start_time"))
 file_size=$(du -h "$BACKUP_DIR"/"$SERVER_NAME"-"$DATE_STR".tar.gz | cut -f1)
 server_say "Upload Complete In ${exec_time}s. File size ${file_size}"
 echo "Upload Complete In ${exec_time}s. File size ${file_size}"
-if [ ! "$dry_run" ]; then
+if [ "$dry_run" = "false" ]; then
   delete_files_older_than "$LOCAL_EXPIRY_DAYS" "$BACKUP_DIR"
   # delete_files_older_than "$CLOUD_EXPIRY_DAYS" "$CLOUD_BACKUP_DIR"
 fi
