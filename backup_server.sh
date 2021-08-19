@@ -58,7 +58,7 @@ parse_params "$@"
 
 echo "---------------------------------------------------------------------"
 echo "Starting backup for $DATE_STR"
-if [ "$dry_run" ]; then
+if [ "$dry_run" = "true" ]; then
   echo "Doing dry run"
   server_say "Doing dry run"
 fi
