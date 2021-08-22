@@ -44,9 +44,6 @@ member_cache = discord.MemberCacheFlags.none()
 member_cache.online = True
 member_cache.joined = True
 
-# Minecraft server
-server = MinecraftServer.lookup("localhost:25565")
-
 
 class MCServerClient(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -56,6 +53,7 @@ class MCServerClient(discord.Client):
 
     @staticmethod
     def online() -> List[str]:
+        server = MinecraftServer.lookup("localhost:25565")
         query = server.query()
         return [p.lower() for p in query.players.names]
 
