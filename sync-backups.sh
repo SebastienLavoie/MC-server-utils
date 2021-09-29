@@ -9,7 +9,7 @@ BACKUP_LOG_DIR="$SERVER_DIR"/backup-sync-logs
 BACKUP_TIME=$(date +%Y%m%dT%H%M%S)
 BACKUP_LOG="$BACKUP_LOG_DIR"/"$BACKUP_TIME"-backup-sync.log
 
-mkdir "$BACKUP_LOG_DIR" || true >/dev/null
+mkdir -p "$BACKUP_LOG_DIR"
 exec > >(tee -a "$BACKUP_LOG")
 exec 2> >(tee -a "$BACKUP_LOG" >&2)
 
