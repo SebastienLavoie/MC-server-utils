@@ -1,0 +1,13 @@
+[Unit]
+Description=Valheim server in docker container
+After=network.target network-online.target
+
+[Service]
+Type=simple
+ExecStart=/home/slavoie/Server-utils/valheim/start_server.sh
+KillSignal=SIGINT
+Restart=on-failure
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
