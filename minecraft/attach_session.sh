@@ -1,3 +1,3 @@
 #!/bin/bash
 
-tmux attach-session -t minecraft-server
+tmux attach-session -t mc
