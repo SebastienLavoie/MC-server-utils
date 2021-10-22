@@ -6,8 +6,8 @@ After=network.target network-online.target
 Type=simple
 RemainAfterExit=yes
 User=slavoie
-ExecStart=/home/slavoie/minecraft/MC-server-utils/start_server_session.sh
-ExecStop=/home/slavoie/minecraft/MC-server-utils/kill_server_session.sh
+ExecStart=/home/slavoie/Server-utils/start_server_session.sh
+ExecStop=/home/slavoie/Server-utils/kill_server_session.sh
 Restart=on-failure
 RestartSec=60
 
