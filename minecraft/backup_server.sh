@@ -6,7 +6,7 @@ source "$SCRIPT_DIR"/server.conf
 set -eo errexit pipefail
 
 DATE_STR=$(date +%Y%m%dT%H%M%S)
-LOCAL_EXPIRY_DAYS=4
+LOCAL_EXPIRY_DAYS=7
 CLOUD_EXPIRY_DAYS=14
 MAX_DIR_SIZE=536870912000  # 500GiB
 dry_run=false
@@ -81,20 +81,25 @@ fi
 rm -rf /tmp/mc-backup
 stop_time=$(date +%s)
 exec_time=$(("$stop_time" - "$start_time"))
-server_say "Backup Done In ${exec_time}s. Uploading To Cloud..."
-echo "Backup Done In ${exec_time}s. Uploading To Cloud..."
+server_say "Backup Done In ${exec_time}s"
+echo "Backup Done In ${exec_time}s"
 
-start_time=$(date +%s)
-if [ "$dry_run" = "false" ]; then
-  rclone copy -P "$BACKUP_DIR"/"$SERVER_NAME"-"$DATE_STR".tar.gz "$REMOTE_BACKUP_DIR"
+if [ ! -z ${CLOUD_BACKUP_DIR+x} ]; then
+	server_say "Uploading to cloud..."
+	echo "Uploading to cloud..."
+	start_time=$(date +%s)
+	if [ "$dry_run" = "false" ]; then
+	  rclone copy -P "$BACKUP_DIR"/"$SERVER_NAME"-"$DATE_STR".tar.gz "$REMOTE_BACKUP_DIR"
+	fi
+	stop_time=$(date +%s)
+	exec_time=$(("$stop_time" - "$start_time"))
+	file_size=$(du -h "$BACKUP_DIR"/"$SERVER_NAME"-"$DATE_STR".tar.gz | cut -f1)
+	server_say "Upload Complete In ${exec_time}s. File size ${file_size}"
+	echo "Upload Complete In ${exec_time}s. File size ${file_size}"
 fi
-stop_time=$(date +%s)
-exec_time=$(("$stop_time" - "$start_time"))
-file_size=$(du -h "$BACKUP_DIR"/"$SERVER_NAME"-"$DATE_STR".tar.gz | cut -f1)
-server_say "Upload Complete In ${exec_time}s. File size ${file_size}"
-echo "Upload Complete In ${exec_time}s. File size ${file_size}"
+
 if [ "$dry_run" = "false" ]; then
   delete_files_older_than "$LOCAL_EXPIRY_DAYS" "$BACKUP_DIR"
-  # delete_files_older_than "$CLOUD_EXPIRY_DAYS" "$CLOUD_BACKUP_DIR"
+  delete_files_older_than "$CLOUD_EXPIRY_DAYS" "$CLOUD_BACKUP_DIR"
 fi
 echo "---------------------------------------------------------------------"
