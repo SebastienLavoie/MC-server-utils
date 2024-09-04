@@ -7,7 +7,7 @@ from pathlib import Path
 from subprocess import run, PIPE
 from sys import stdout
 from typing import Dict, List
-from mcstatus import MinecraftServer
+from mcstatus import JavaServer
 
 import discord
 from discord.ext import tasks
@@ -53,7 +53,7 @@ class MCServerClient(discord.Client):
 
     @staticmethod
     def online() -> List[str]:
-        server = MinecraftServer.lookup("localhost:25565")
+        server = JavaServer.lookup("localhost:25565")
         query = server.query()
         return [p.lower() for p in query.players.names]
 
