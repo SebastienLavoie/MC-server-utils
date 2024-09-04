@@ -37,13 +37,14 @@ online_role_id = int(config["default"]["online_role_id"])
 guild_id = config["default"]["guild_id"]
 
 # Intents
-intents = discord.Intents(messages=True, members=True, presences=True, guilds=True)
+intents = discord.Intents(messages=True, members=True, presences=True, guilds=True, message_content=True)
 
 # Member cache
 member_cache = discord.MemberCacheFlags.none()
-member_cache.online = True
 member_cache.joined = True
 
+# Discord to minecraft name mapping
+user_name_override = {"madmike1771": "madmikey1771"}
 
 class MCServerClient(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -54,8 +55,8 @@ class MCServerClient(discord.Client):
     @staticmethod
     def online() -> List[str]:
         server = JavaServer.lookup("localhost:25565")
-        query = server.query()
-        return [p.lower() for p in query.players.names]
+        status = server.status()
+        return [p.name.lower() for p in status.players.sample]
 
     @staticmethod
     def get_ip() -> str:
@@ -69,15 +70,18 @@ class MCServerClient(discord.Client):
         return self.mc_guild.get_role(online_role_id)
 
     async def get_members(self):
-        return await self.mc_guild.fetch_members().flatten()
+        return self.mc_guild.fetch_members()
 
     async def get_members_dict(self) -> Dict[str, discord.Member]:
         members = await self.get_members()
         member_dict = dict()
-        for member in members:
+        async for member in members:
             if member.id != self.user.id:
                 name = member.nick.lower() if member.nick is not None else member.name.lower()
-                member_dict[name] = member
+                if name in user_name_override.keys():
+                    member_dict[user_name_override[name]] = member
+                else:
+                    member_dict[name] = member
         return member_dict
 
     @tasks.loop(seconds=10.0)
@@ -121,7 +125,7 @@ class MCServerClient(discord.Client):
                 else:
                     msg = "Players Online:\n"
                     for player in players_online:
-                        msg += f"\t- {player}\n"
+                        msg += f"- {player}\n"
                     return msg
 
             response_dict = {
