@@ -56,7 +56,10 @@ class MCServerClient(discord.Client):
     def online() -> List[str]:
         server = JavaServer.lookup("localhost:25565")
         status = server.status()
-        return [p.name.lower() for p in status.players.sample]
+        if status.players.sample is not None:
+            return [p.name.lower() for p in status.players.sample]
+        else:
+            return []
 
     @staticmethod
     def get_ip() -> str:
