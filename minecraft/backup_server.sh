@@ -100,6 +100,8 @@ fi
 
 if [ "$dry_run" = "false" ]; then
   delete_files_older_than "$LOCAL_EXPIRY_DAYS" "$BACKUP_DIR"
-  delete_files_older_than "$CLOUD_EXPIRY_DAYS" "$CLOUD_BACKUP_DIR"
+  if [ ! -z ${CLOUD_BACKUP_DIR+x} ]; then
+    delete_files_older_than "$CLOUD_EXPIRY_DAYS" "$CLOUD_BACKUP_DIR"
+  fi
 fi
 echo "---------------------------------------------------------------------"
