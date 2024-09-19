@@ -8,6 +8,7 @@ from subprocess import run, PIPE
 from sys import stdout
 from typing import Dict, List
 from mcstatus import JavaServer
+from traceback import format_exc
 
 import discord
 from discord.ext import tasks
@@ -51,6 +52,7 @@ class MCServerClient(discord.Client):
         super().__init__(*args, **kwargs)
         self.mc_guild = None  # To be populated later on
         self.response_channel = None
+        self.update_players_loop_count = 0
 
     @staticmethod
     def online() -> List[str]:
@@ -78,20 +80,26 @@ class MCServerClient(discord.Client):
     async def get_members_dict(self) -> Dict[str, discord.Member]:
         members = await self.get_members()
         member_dict = dict()
-        async for member in members:
-            if member.id != self.user.id:
-                name = member.nick.lower() if member.nick is not None else member.name.lower()
-                if name in user_name_override.keys():
-                    member_dict[user_name_override[name]] = member
-                else:
-                    member_dict[name] = member
+        try:
+            async for member in members:
+                if member.id != self.user.id:
+                    name = member.nick.lower() if member.nick is not None else member.name.lower()
+                    if name in user_name_override.keys():
+                        member_dict[user_name_override[name]] = member
+                    else:
+                        member_dict[name] = member
+        except discord.errors.DiscordServerError as e:
+            log.error(f"Error connecting to discord server: {e}")
+            log.error(format_exc())
+            log.error("Committing suicide")
+            exit(1)
         return member_dict
 
     @tasks.loop(seconds=10.0)
     async def update_player_status(self):
         players_online = self.online()
         members_dict = await self.get_members_dict()
-        if len(players_online) > 0:
+        if len(players_online) > 0 and (self.update_players_loop_count % 10) == 0:
             log.debug(f"Players online: {players_online}")
         online_role = self.get_online_role()
         for member in members_dict.keys():
@@ -104,6 +112,7 @@ class MCServerClient(discord.Client):
                 log.info(f"Removing role {online_role.name} from {member}")
                 await members_dict[member].remove_roles(online_role, atomic=True)
                 # await self.send_msg(f"{member} left the game")
+        self.update_players_loop_count += 1
 
     async def on_ready(self):
         for guild in self.guilds:
