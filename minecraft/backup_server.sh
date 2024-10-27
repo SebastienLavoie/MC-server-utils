@@ -81,8 +81,9 @@ fi
 rm -rf /tmp/mc-backup
 stop_time=$(date +%s)
 exec_time=$(("$stop_time" - "$start_time"))
-server_say "Backup Done In ${exec_time}s"
-echo "Backup Done In ${exec_time}s"
+disk_usage_pcent=$(df --output=pcent "$BACKUP_DIR" | tail -n 1 | tr -d ' ')
+server_say "Backup Done In ${exec_time}s. Backup disk is ${disk_usage_pcent} full"
+echo "Backup Done In ${exec_time}s. Backup disk is ${disk_usage_pcent} full"
 
 if [ ! -z ${CLOUD_BACKUP_DIR+x} ]; then
 	server_say "Uploading to cloud..."
