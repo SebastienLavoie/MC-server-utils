@@ -2,8 +2,8 @@
 
 set -eEuo pipefail
 
-source /home/slavoie/Valheim/server.conf
-source /home/slavoie/Valheim/.server.pass
+source /home/slavoie/Server-utils/valheim/server.conf
+source /home/slavoie/Server-utils/valheim/.server.pass
 
 docker run --rm --name valheim-server --cap-add=sys_nice --stop-timeout 120 \
        -p 2456-2457:2456-2457/udp  -v "$SERVER_DIR"/config:/config  -v "$SERVER_DIR"/data:/opt/valheim \
