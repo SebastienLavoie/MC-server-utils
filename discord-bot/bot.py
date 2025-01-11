@@ -56,11 +56,15 @@ class MCServerClient(discord.Client):
 
     @staticmethod
     def online() -> List[str]:
-        server = JavaServer.lookup("localhost:25565")
-        status = server.status()
-        if status.players.sample is not None:
-            return [p.name.lower() for p in status.players.sample]
-        else:
+        try:
+            server = JavaServer.lookup("localhost:25565")
+            status = server.status()
+            if status.players.sample is not None:
+                return [p.name.lower() for p in status.players.sample]
+            else:
+                return []
+        except Exception as e:
+            log.error(e)
             return []
 
     @staticmethod
